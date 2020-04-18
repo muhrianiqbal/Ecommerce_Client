@@ -1,5 +1,5 @@
-<template>
 <!-- eslint-disable-next-line vue/max-attributes-per-line -->
+<template>
 <div class="login">
   <h1>Login</h1>
     <b-form @submit="onSubmit" @reset="onReset">
@@ -17,9 +17,9 @@
         ></b-form-input>
       </b-form-group>
 
-      <b-form-group id="input-group-3" label="Password:" label-for="input-3">
+      <b-form-group id="input-group-2" label="Password:" label-for="input-2">
         <b-form-input
-          id="input-3"
+          id="input-2"
           v-model="form.password"
           type="password"
           required
@@ -45,23 +45,25 @@ export default {
         email: '',
         password: ''
       }
-      // show: true
     }
   },
   methods: {
     onSubmit (evt) {
       evt.preventDefault()
-      // alert(JSON.stringify(this.form))
       axios({
         method: 'post',
-        url: 'localhost:3000/login',
+        url: 'http://localhost:3000/login',
         data: {
           email: this.form.email,
           password: this.form.password
         }
       })
         .then(data => {
-          localStorage.setItem('token', data.token)
+          localStorage.setItem('token', data.data.token)
+          this.form.email = ''
+          this.form.password = ''
+          this.$router.push('/')
+          this.$store.commit('getRole', data.data.role)
           console.log('Welcome')
         })
         .catch(err => {
@@ -70,15 +72,14 @@ export default {
     },
     onReset (evt) {
       evt.preventDefault()
-      // Reset our form values
       this.form.email = ''
       this.form.password = ''
       this.$router.push('/register')
-      // Trick to reset/clear native browser form validation state
-      // this.show = false
-      // this.$nextTick(() => {
-      //   this.show = true
-      // })
+    }
+  },
+  created () {
+    if (localStorage.token) {
+      this.$router.push('/')
     }
   }
 }

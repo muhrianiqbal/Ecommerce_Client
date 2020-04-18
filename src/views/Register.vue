@@ -1,8 +1,7 @@
 <template>
-<!-- eslint-disable-next-line vue/max-attributes-per-line -->
 <div class="register">
   <h1>Register</h1>
-    <b-form @submit="onSubmit" @reset="onReset">
+    <b-form @submit.prevent="onSubmit" @reset.prevent="onReset">
       <b-form-group id="input-group-2" label="Your Name:" label-for="input-2">
         <b-form-input
           id="input-2"
@@ -56,16 +55,13 @@ export default {
         name: '',
         password: ''
       }
-      // show: true
     }
   },
   methods: {
-    onSubmit (evt) {
-      evt.preventDefault()
-
+    onSubmit () {
       axios({
         method: 'post',
-        url: 'localhost:3000/login',
+        url: 'http://localhost:3000/register',
         data: {
           name: this.form.name,
           email: this.form.email,
@@ -73,24 +69,23 @@ export default {
         }
       })
         .then(data => {
-          console.log(data.message)
+          console.log(data.data.message)
+          this.onReset()
         })
         .catch(err => {
           console.log(err)
         })
     },
-    onReset (evt) {
-      evt.preventDefault()
-      // Reset our form values
+    onReset () {
       this.form.email = ''
       this.form.name = ''
       this.form.password = ''
-      // Trick to reset/clear native browser form validation state
       this.$router.push('/login')
-      // this.show = false
-      // this.$nextTick(() => {
-      //   this.show = true
-      // })
+    }
+  },
+  created () {
+    if (localStorage.token) {
+      this.$router.push('/')
     }
   }
 }

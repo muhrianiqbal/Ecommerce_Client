@@ -2,25 +2,26 @@
 <!-- eslint-disable-next-line vue/max-attributes-per-line -->
 <div>
   <b-navbar toggleable="lg" type="dark" variant="info">
-    <b-navbar-brand href="#">Home</b-navbar-brand>
+    <b-navbar-brand>Home</b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
     <b-collapse id="nav-collapse" is-nav>
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
-        <b-nav-form>
-          <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
+        <b-nav-form @keyup.prevent="search">
+          <b-form-input size="sm" class="mr-sm-2" placeholder="Search" v-model="find"></b-form-input>
           <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
         </b-nav-form>
 
         <b-nav-item-dropdown right>
           <!-- Using 'button-content' slot -->
           <template v-slot:button-content>
-            <em>User</em>
+            <em>{{role}}</em>
           </template>
           <!-- <b-dropdown-item href="#">Profile</b-dropdown-item> -->
-          <b-dropdown-item href="#">Logut</b-dropdown-item>
+          <b-dropdown-item href="/add" @click.prevent="product" v-if="role == 'admin'">Add Product</b-dropdown-item>
+          <b-dropdown-item href="/" @click.prevent="logout">Logut</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
@@ -30,6 +31,31 @@
 
 <script>
 export default {
-  name: 'Navbar'
+  name: 'Navbar',
+  data () {
+    return {
+      find: ''
+    }
+  },
+  methods: {
+    logout () {
+      localStorage.removeItem('token')
+      this.$router.push('/login')
+    },
+    product () {
+      this.$router.push('/add-product')
+    },
+    search () {
+      this.$store.commit('search', this.find.toLowerCase())
+    }
+  },
+  computed: {
+    role () {
+      return this.$store.state.role
+    }
+  },
+  updated () {
+    this.$store.dispatch('getProduct')
+  }
 }
 </script>
